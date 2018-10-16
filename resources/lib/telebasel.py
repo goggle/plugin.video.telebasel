@@ -30,6 +30,8 @@ import urllib2
 import urllib
 import urlparse
 
+from multiprocessing.dummy import Pool as ThreadPool
+
 import xbmc
 import xbmcgui
 import xbmcplugin
@@ -37,8 +39,6 @@ import xbmcaddon
 
 import feedparser
 from bs4 import BeautifulSoup
-from multiprocessing.dummy import Pool as ThreadPool
-
 from simplecache import SimpleCache
 
 try:
