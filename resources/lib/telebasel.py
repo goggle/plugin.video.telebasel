@@ -498,14 +498,6 @@ def run():
         mode = int(params["mode"])
     except Exception:
         mode = None
-    # try:
-    #     page_hash = urllib.unquote_plus(params['page_hash'])
-    # except Exception:
-    #     page_hash = None
-    # try:
-    #     page = urllib.unquote_plus(params['page'])
-    # except Exception:
-    #     page = None
 
     log("Mode: "+str(mode))
     log("URL : "+str(url))
