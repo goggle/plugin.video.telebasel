@@ -313,6 +313,9 @@ class Telebasel(object):
             int(sys.argv[1]), list_items, totalItems=len(list_items))
 
     def build_newest_shows_menu(self):
+        """
+        Builds the menu containing the most recent episodes.
+        """
         log('build_newest_shows_menu')
         shows = self.retrieve_shows()
         show_pages = [x['page'] + '&podcast' for x in shows]
