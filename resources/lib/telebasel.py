@@ -239,6 +239,14 @@ class Telebasel(object):
                     listitem=list_item, isFolder=menu_item['isFolder'])
 
     def retrieve_shows(self, extract_channel_id=False):
+        """
+        Retrieve basic infos about the available shows from the website.
+        It returns a list of dictionaries with the keys
+        'title', 'page', 'image' and optionally 'channel_id'.
+
+        Keyword arguments:
+        extract_channel_id  -- Extract the channel ids (default: False)
+        """
         log('retrieve_shows, extract_channel_id=%s' % extract_channel_id)
         url = HOST_URL + '/mediathek'
         url_result = self.open_url(url, use_cache=True)
