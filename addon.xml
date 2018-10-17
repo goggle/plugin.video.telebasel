@@ -20,7 +20,9 @@
     <website>https://telebasel.ch</website>
     <email>seileralex@gmail.com</email>
     <source>https://github.com/goggle/plugin.video.telebasel</source>
-    <news></news>
+    <news>v0.9.0 (2018-10-17)
+- First release. Access the content of the media library of Telebasel (by show or the most recent). Watch the livestream.
+    </news>
     <assets>
         <icon>resources/icon.png</icon>
         <fanart>resources/fanart.jpg</fanart>
