@@ -30,7 +30,11 @@ import urllib2
 import urllib
 import urlparse
 
-from multiprocessing.dummy import Pool as ThreadPool
+try:
+    from multiprocessing.dummy import Pool as ThreadPool
+    ENABLE_POOL = True
+except ImportError:
+    ENABLE_POOL = False
 
 import xbmc
 import xbmcgui
@@ -238,16 +242,13 @@ class Telebasel(object):
                     handle=int(sys.argv[1]), url=purl,
                     listitem=list_item, isFolder=menu_item['isFolder'])
 
-    def retrieve_shows(self, extract_channel_id=False):
+    def retrieve_shows(self):
         """
         Retrieve basic infos about the available shows from the website.
         It returns a list of dictionaries with the keys
-        'title', 'page', 'image' and optionally 'channel_id'.
-
-        Keyword arguments:
-        extract_channel_id  -- Extract the channel ids (default: False)
+        'title', 'page', 'image'.
         """
-        log('retrieve_shows, extract_channel_id=%s' % extract_channel_id)
+        log('retrieve_shows')
         url = HOST_URL + '/mediathek'
         url_result = self.open_url(url, use_cache=True)
         soup = BeautifulSoup(url_result, 'html.parser')
@@ -270,6 +271,7 @@ class Telebasel(object):
                     image_url.split('/')[:-1]) + '/' + trunk + '.' + ext
 
             title = ssoup.h2.text
+
             # The element 'Telebasel Archiv' refers to the old
             # website. We need to skip this:
             if 'Archiv' in title:
@@ -277,14 +279,6 @@ class Telebasel(object):
 
             shows.append({'title': title, 'page': page, 'image': image_url})
 
-        if extract_channel_id:
-            feed_urls = [x['page'] + '&podcast' for x in shows]
-            pool = ThreadPool(len(feed_urls))
-            result = pool.map(self.extract_channel_id, feed_urls)
-            pool.close()
-            pool.join()
-            for show, res in zip(shows, result):
-                show['channel_id'] = res
         return shows
 
     def extract_channel_id(self, feed_url):
@@ -324,17 +318,22 @@ class Telebasel(object):
         """
         Builds the menu containing the most recent episodes.
         """
-        log('build_newest_shows_menu')
+        log('build_newest_shows_menu, ENABLE_POOL=%s' % ENABLE_POOL)
         shows = self.retrieve_shows()
         show_pages = [x['page'] + '&podcast' for x in shows]
-        n_threads = 15 if (len(show_pages) > 0) else len(show_pages)
-        pool = ThreadPool(n_threads)
-        result = pool.map(self.parse_feed, show_pages)
-        pool.close()
-        pool.join()
+
         episodes = []
-        for res in result:
-            episodes += res
+        if ENABLE_POOL:
+            n_threads = 10 if (len(show_pages) > 0) else len(show_pages)
+            pool = ThreadPool(n_threads)
+            result = pool.map(self.parse_feed, show_pages)
+            pool.close()
+            pool.join()
+            for res in result:
+                episodes += res
+        else:
+            for show_page in show_pages:
+                episodes += self.parse_feed(show_page)
 
         sorted_episodes = sorted(
             episodes, key=lambda k: k['date'], reverse=True)
