@@ -255,7 +255,7 @@ class Telebasel(object):
         shows_soup = soup.find_all('a', {'class': 'tb-a-unstyled'})
 
         shows = []
-        image_regex = r'background-image\s*:\s*url\(\'(?P<url>.+)\''
+        image_regex = r'data-bg\s*=\s*\"url\(\'(?P<url>.+)\''
         for ssoup in shows_soup:
             page = ssoup.attrs['href']
             m = re.search(image_regex, str(ssoup))
