@@ -273,7 +273,7 @@ class Telebasel(object):
         for ssoup in shows_soup:
             try:
                 page = ssoup.attrs['href']
-                m = re.search(image_regex, str(ssoup))
+                m = re.search(image_regex, CompatStr(ssoup))
                 image_url = m.group('url')
 
                 filename = image_url.split('/')[-1]
@@ -291,9 +291,10 @@ class Telebasel(object):
                 if 'Archiv' in title:
                     continue
 
-                urls = list(map(lambda x: x['page'], shows))
+                urls = frozenset(map(lambda x: x['page'], shows))
                 if page not in urls:
-                    shows.append({'title': title, 'page': page, 'image': image_url})
+                    shows.append(
+                        {'title': title, 'page': page, 'image': image_url})
             except Exception:
                 continue
 
